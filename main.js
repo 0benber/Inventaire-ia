@@ -1,0 +1,1 @@
+// Ceci est un fichier JS vide pour l'exemple
