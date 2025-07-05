@@ -1,1 +1,59 @@
-<!DOCTYPE html><html><head><title>Inventaire IA</title></head><body><div id='root'></div><script src='main.js'></script></body></html>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Inventaire IA</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    input, textarea { display: block; margin-bottom: 10px; width: 100%; }
+    #items { margin-top: 20px; }
+    .item { border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; }
+  </style>
+</head>
+<body>
+  <h1>Inventaire IA</h1>
+
+  <input type="text" id="name" placeholder="Nom de l'objet" />
+  <textarea id="description" placeholder="Description..."></textarea>
+  <input type="file" id="photo" />
+  <button onclick="addItem()">Ajouter</button>
+
+  <div id="items"></div>
+
+  <script>
+    const items = [];
+
+    function addItem() {
+      const name = document.getElementById('name').value;
+      const description = document.getElementById('description').value;
+      const photoInput = document.getElementById('photo');
+
+      if (!name || !description || !photoInput.files.length) {
+        alert('Veuillez remplir tous les champs.');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        items.push({ name, description, photo: e.target.result });
+        displayItems();
+      };
+      reader.readAsDataURL(photoInput.files[0]);
+    }
+
+    function displayItems() {
+      const container = document.getElementById('items');
+      container.innerHTML = '';
+      items.forEach((item, i) => {
+        container.innerHTML += `
+          <div class="item">
+            <h3>${item.name}</h3>
+            <p>${item.description}</p>
+            <img src="${item.photo}" alt="Photo" style="max-width: 200px;" />
+          </div>
+        `;
+      });
+    }
+  </script>
+</body>
+</html>
