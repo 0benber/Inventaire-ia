@@ -1,52 +1,69 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Inventaire IA</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      max-width: 600px;
-      margin: auto;
-    }
-    h1 {
-      text-align: center;
-    }
-    img {
-      margin-top: 10px;
-      max-width: 100%;
-    }
-    form {
-      margin-bottom: 30px;
-    }
-    input, textarea, button {
-      display: block;
-      margin-top: 10px;
-      width: 100%;
-      padding: 8px;
-      font-size: 16px;
-    }
-    #inventory-list > div {
-      margin-bottom: 20px;
-      padding: 10px;
-      border: 1px solid #ddd;
-    }
-  </style>
-</head>
-<body>
+function loadInventory() {
+  const data = localStorage.getItem('inventory');
+  return data ? JSON.parse(data) : [];
+}
 
-  <h1>Inventaire IA</h1>
+function saveInventory(inventory) {
+  localStorage.setItem('inventory', JSON.stringify(inventory));
+}
 
-  <form>
-    <input type="text" id="type" placeholder="Type (ex : Boite, Livre...)" required>
-    <textarea id="description" placeholder="Description" required></textarea>
-    <input type="file" id="file" accept="image/*" required>
-    <button type="submit">Ajouter</button>
-  </form>
+function renderInventory(inventory) {
+  const list = document.getElementById('inventory-list');
+  list.innerHTML = '';
 
-  <div id="inventory-list"></div>
+  inventory.forEach(item => {
+    const container = document.createElement('div');
+    const title = document.createElement('h3');
+    const desc = document.createElement('p');
+    const image = document.createElement('img');
 
-  <script src="main.js"></script>
-</body>
-</html>
+    title.textContent = item.type;
+    desc.textContent = item.description;
+    image.src = item.image;
+    image.alt = 'Image de l\'objet';
+    image.style.width = '200px';
+    image.style.display = 'block';
+    image.style.marginTop = '10px';
+
+    container.appendChild(title);
+    container.appendChild(desc);
+    container.appendChild(image);
+    list.appendChild(container);
+  });
+}
+
+let inventory = loadInventory();
+renderInventory(inventory);
+
+const form = document.querySelector('form');
+const typeInput = document.getElementById('type');
+const descInput = document.getElementById('description');
+const fileInput = document.getElementById('file');
+
+form.addEventListener('submit', (e) => {
+  e.preventDefault();
+
+  const type = typeInput.value.trim();
+  const description = descInput.value.trim();
+  const file = fileInput.files[0];
+
+  if (!type || !description || !file) {
+    alert("Remplis tous les champs et choisis une image.");
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    const newItem = {
+      type,
+      description,
+      image: reader.result
+    };
+    inventory.push(newItem);
+    saveInventory(inventory);
+    renderInventory(inventory);
+    form.reset();
+  };
+
+  reader.readAsDataURL(file);
+});
