@@ -62,7 +62,10 @@ form.addEventListener('submit', (e) => {
     inventory.push(newItem);
     saveInventory(inventory);
     renderInventory(inventory);
+
+    // Réinitialisation du formulaire
     form.reset();
+    fileInput.value = ''; // Important : reset manuel du champ image
   };
 
   reader.readAsDataURL(file);
